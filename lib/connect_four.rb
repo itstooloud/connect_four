@@ -2,19 +2,41 @@
 Hopefully everyone has played Connect Four at some point (if not, see the Wikipedia page). It's a basic game where each player drops pieces into the cage in turn. A player wins if he or she manages to get 4 of their pieces consecutively in a row, column, or along a diagonal.
 =end
 
+
+
 class Game
 
-	attr_accessor :columns, :rows, :grid, :players
+	attr_accessor :columns, :rows, :grid, :player
 
 	def initialize(rows = 6, columns = 7)
 
 		@rows = rows
 		@columns = columns
 		@grid = make_grid
-		@players = ["X","O"]
-		@player = @players[0]
+		@player = Player.new("Steve")
+		
 		
 	end
+
+
+	def update_grid (column)
+		
+		done = false
+		j = @rows - 1
+		p @grid
+		puts j
+		puts column
+		#puts @grid[column][3]
+
+		while (j >= 0 && !done)
+			if @grid[j][column] == '.'
+				@grid[j][column] = 'X'
+				done = true
+			end
+			j-=1
+		end #while
+
+	end #update_grid
 
 	def make_grid
 		grid = []
@@ -25,7 +47,7 @@ class Game
 		while i < @rows
 			j = 0
 			while j < @columns
-				sub_array << j.to_s
+				sub_array << "." #j.to_s
 				j+=1
 			end
 			grid << sub_array
@@ -36,15 +58,12 @@ class Game
 		grid
 		
 
-	end
+	end #make_grid
 
 	def to_s
 		puts "rows : " + @rows.to_s
 		puts "columns : " + @columns.to_s
-		puts "player : " + @player
-		
-
-	end
+	end #to_s
 
 
 
@@ -56,7 +75,7 @@ class Game
 		while r < @rows
 			c = 0
 			while c < @columns
-				printf "_ " + "." + " _" #grid[r][c].to_s
+				printf "_ " + grid[r][c].to_s + " _" #grid[r][c].to_s
 				if c < (@columns-1) 
 				 printf "|" 
 				else 
@@ -69,7 +88,7 @@ class Game
 			r +=1
 		end
 
-	end
+	end #render_grid
 
 	def has_won?(player)
 		
@@ -77,30 +96,52 @@ class Game
 
 	def get_move(player)
 
-		puts "Enter which column (1 - " + @columns.to_s + ") "
+		puts "Enter which column (0 - " + (@columns -1).to_s + ") "
 		printf ">>"
-		col_choice = gets.chomp.to_i - 1
+		col_choice = gets.chomp.to_i
+
+		
+		while !col_choice.between?(0, @columns)
+			puts "OUT OF RANGE"
+			puts "Enter which column (0 - " + (@columns-1).to_s + ") "
+			printf ">>"
+			col_choice = gets.chomp.to_i
+		end
+
 		col_choice
 
 	end
 
-	def update_grid(player, column)
-		
-
-
-	end
-
-
-
-
-
-
-
-
 
 end #class Game
 
-g = Game.new(9,9)
-puts g
+
+class Player
+
+	attr_accessor :name
+
+	def initialize(player)
+		@name = player
+
+	end
+
+end #class Player
+
+
+g = Game.new(3,5)
+
+loop do
+choice = g.get_move("Burt")
+
+
 g.render_grid
-g.get_move("X")
+g.update_grid(choice)
+g.render_grid
+end
+
+
+
+#puts g.player.name
+
+#g.get_move(g.player.name)
+
